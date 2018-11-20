@@ -7,40 +7,39 @@ function BER=OFDMEntry(modulation, SNR, L, plot_config, SNR_test, CN, OP)
 %Output:
     %ber：
 %----------------------------------------------------
-carrier_count=1024;%子载波数
-symbols_per_carrier=8;%每子载波含符号数
+carrier_count=1024;
+symbols_per_carrier=8;
 if (modulation==1)
-    bits_per_symbol=4;%每符号含比特数,16QAM调制
+    bits_per_symbol=4;%corresponding to 16-QAM modulation
 else
-    bits_per_symbol=2;%每符号含比特数,QPSK调制
+    bits_per_symbol=2;%corresponding to QPSK modulation
 end
-IFFT_bin_length=2944;%FFT点数
-PrefixRatio=1/4;%保护间隔与OFDM数据的比例
-CP=PrefixRatio*IFFT_bin_length ;%每一个OFDM符号添加的循环前缀长度为PrefixRatio*IFFT_bin_length
-beta=1/32;%窗函数滚降系数
-CS=beta*(IFFT_bin_length+CP);%循环后缀长度
-%------------------------------------------------------------------------------------------------------
-%                                                                  发射端
-%------------------------------------------------------------------------------------------------------
-%----------------------------------------------信号产生----------------------------------------------
-baseband_out_length = carrier_count * symbols_per_carrier * bits_per_symbol;%所输入的比特数目
+IFFT_bin_length=2944;%FFT length
+PrefixRatio=1/4;%cyclic prefix ratio of FFT length
+CP=PrefixRatio*IFFT_bin_length ;%cyclic prefix length of each symbol
+beta=1/32;%window function roll-off coefficient
+CS=beta*(IFFT_bin_length+CP);%length after adding CP
+
+%# Transisver
+%## Signal Generation
+baseband_out_length = carrier_count * symbols_per_carrier * bits_per_symbol;%total bits count
 carriers = (1:carrier_count) + (floor(IFFT_bin_length/4) - floor(carrier_count/2));%共轭对称子载波映射，原复数数据对应坐标
 conjugate_carriers = IFFT_bin_length - carriers + 2;%共轭对称子载波映射，共轭复数对应的IFFT点坐标
 baseband_out=round(rand(1,baseband_out_length));%输出二进制比特流
 if (modulation==1)
-%----------------------------------------------16QAM调制-------------------------------------------
+%16QAM
     complex_carrier_matrix=qam16(baseband_out);%调制后数据
     complex_carrier_matrix=reshape(complex_carrier_matrix',carrier_count,symbols_per_carrier)';%symbols_per_carrier*carrier_count 矩阵
     if (plot_config)
         figure('Name','16QAM Constellation Diagram','NumberTitle','off');
         plot(complex_carrier_matrix,'or');%16QAM调制后星座图
-        title('16QAM调制信号星座图')
+        title('16QAM Constellation Diagram')
         axis square
         axis([-4, 4, -4, 4]);
         grid on
     end
 else
-%------------------------------------------------QPSK调制-------------------------------------------
+%QPSK
     complex_carrier_matrix=qpsk(baseband_out);
     complex_carrier_matrix=reshape(complex_carrier_matrix',carrier_count,symbols_per_carrier)';
     if (plot_config)
@@ -52,6 +51,7 @@ else
         grid on
     end
 end
+
 %---------------------------------------------------导频------------------------------------------------
 tmpTable = [-1,1,1i,-1i];%导频数据为-1 1 -i i中选取的随机序列
 trainingSymbols_len =4;%导频长度
