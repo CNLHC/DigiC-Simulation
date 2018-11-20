@@ -18,12 +18,13 @@ if (~comp)
     plot(x,Ber_L,'.r','MarkerSize',12);
 
     if (modu_type==1)
-        title(['BER-Number of Pathes  16-QAM  SNR=', num2str(SNR)])
+        title('BER-Number of Pathes  16-QAM  SNR=', num2str(SNR))
     else
-        title(['BER-Number of Pathes  QPSK  SNR=', num2str(SNR)])
+        title('BER-Number of Pathes  QPSK  SNR=', num2str(SNR))
     end
     xlabel('Pathes')
     ylabel('BER')
+
     grid on
 else
     for rounds=1:5
