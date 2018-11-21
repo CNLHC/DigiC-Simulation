@@ -15,6 +15,8 @@ if (config('using16QAM')==1)
 else
     config('bitsPerSymbol')=2;%每符号含比特数,QPSK调制
 end
+config('basebandOutLengthlength') = config('carrierCounts') * config('symbolsPerCarrier') * config('bitsPerSymbol');%所输入的比特数目
+
 config('IFFTBinLength')= 2944;% length of IFFT
 config('prefixRatio')=1/4;%保护间隔与OFDM数据的比例
 config('CPLength')=config('prefixRatio')*config('IFFTBinLength');

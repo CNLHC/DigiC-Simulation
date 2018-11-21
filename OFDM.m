@@ -11,10 +11,11 @@ config = OFDMSettings(using16QAM, SNR, L, plotEnable, SNR_test, CN, OP);
 %----------------------------------------------信号产生----------------------------------------------
 [baseband_out,carriers]=OFDMSimpleSignalGenerator(config);
 
+fprintf("%s:Transiver:Calculating\n",datestr(now,'HH:MM:SS.FFF'));
 windowed_Tx_data=OFDMTransiver(baseband_out,carriers,config);
-
+fprintf("%s:Channel:Calculating\n",datestr(now,'HH:MM:SS.FFF'));
 Rx_data=OFDMChannel(windowed_Tx_data,config);
-
+fprintf("%s:Receiver:Calculating\n",datestr(now,'HH:MM:SS.FFF'));
 Rx_decoded_binary_symbols=OFDMReceiver(Rx_data,carriers,config);
 
 baseband_in = Rx_decoded_binary_symbols;
@@ -32,4 +33,4 @@ end
 %-------------------------------------------误码率计算-------------------------------------------------
 bit_errors=find(baseband_in ~= baseband_out);
 Bit_Errors = size(bit_errors, 2);
-BER=Bit_Errors/baseband_out_length;
+BER=Bit_Errors/config('basebandOutLengthlength') ;
