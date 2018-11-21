@@ -6,6 +6,7 @@ config('plotEnable')=plotEnable;
 config('SNR_test')=SNR_test;
 config('CN')=CN;
 config('OP')=OP;
+config('trainingSymbolsLength')=4;%µ¼Æµ³¤¶È
 
 
 
