@@ -30,9 +30,8 @@ else
     end
 end
 %---------------------------------------------------导频------------------------------------------------
-tmpTable = [-1,1,1i,-1i];%导频数据为-1 1 -i i中选取的随机序列
-trainingSymbols_len =4;%导频长度
-trainingSymbols = (tmpTable(floor( 4*rand(trainingSymbols_len,config('carrierCounts')))+1 ));%trainingSymbols_len*carrier_count矩阵
+trainingSymbols_len=config('trainingSymbolsLength');
+trainingSymbols=config('trainingSymbols');
 zero_padding=zeros(1,config('carrierCounts'));%插入一行零数据
 complex_carrier_matrix=cat(1,zero_padding,complex_carrier_matrix);
 complex_carrier_matrix=cat(1,trainingSymbols,complex_carrier_matrix);%块状导频，拼接在数据矩阵前

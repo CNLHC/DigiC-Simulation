@@ -6,9 +6,6 @@ config('plotEnable')=plotEnable;
 config('SNR_test')=SNR_test;
 config('CN')=CN;
 config('OP')=OP;
-config('trainingSymbolsLength')=4;%导频长度
-
-
 
 config('carrierCounts')=1024;
 config('symbolsPerCarrier')=8;
@@ -23,4 +20,9 @@ config('prefixRatio')=1/4;%保护间隔与OFDM数据的比例
 config('CPLength')=config('prefixRatio')*config('IFFTBinLength');
 config('beta')=1/32;%窗函数滚降系数
 config('CSLength')=config('beta')*(config('IFFTBinLength')+config('CPLength'));%循环后缀长度
+
+config('trainingSymbolsLength')=4;%导频长度
+tmpTable = [-1,1,1i,-1i];%导频数据为-1 1 -i i中选取的随机序列
+config('trainingSymbols') = (tmpTable(floor( 4*rand(config('trainingSymbolsLength'),config('carrierCounts')))+1 ));%trainingSymbols_len*carrier_count矩阵
+
 end

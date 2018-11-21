@@ -1,4 +1,14 @@
-function Rx_decoded_binary_symbols=OFDMReceiver(Rx_data,OP)
+function Rx_decoded_binary_symbols=OFDMReceiver(Rx_data,carriers,config)
+    IFFT_bin_length=config('IFFTBinLength');
+    symbols_per_carrier=config('symbolsPerCarrier');
+    CP=config('CPLength');
+    CS=config('CSLength');
+    OP=config('OP');
+    plotEnable=config('plotEnable');
+    using16QAM=config('using16QAM');
+    trainingSymbols_len=config('trainingSymbolsLength');
+    trainingSymbols=config('trainingSymbols');
+
     %------------------------------------------------------------------------------------------------------
     %                                                                  接收端
     %------------------------------------------------------------------------------------------------------
@@ -29,7 +39,7 @@ function Rx_decoded_binary_symbols=OFDMReceiver(Rx_data,OP)
     Rx = Rx2((trainingSymbols_len+1+1:size(Rx2,1)),:);%去除导频，提取调制信号
     Rx_phase =angle(Rx);%接收信号的相位
     Rx_mag = abs(Rx);%接收信号的幅度
-    if (plot_config)
+    if (plotEnable)
         figure('Name','RX Constellation Diagram I','NumberTitle','off');
         polarplot(Rx_phase, Rx_mag,'bd');%极坐标下接收信号的星座图
         title('RX信号的星座图（极坐标）')
@@ -39,7 +49,7 @@ function Rx_decoded_binary_symbols=OFDMReceiver(Rx_data,OP)
     [M, N]=pol2cart(Rx_phase, Rx_mag); 
     Rx_complex_carrier_matrix = complex(M, N);
 
-    if (plot_config)
+    if (plotEnable)
         figure('Name','RX Constellation Diagram II','NumberTitle','off');
         plot(Rx_complex_carrier_matrix,'*b');%直角坐标下接收信号的星座图
         title('RX信号星座图（直角坐标）')
@@ -49,7 +59,7 @@ function Rx_decoded_binary_symbols=OFDMReceiver(Rx_data,OP)
     end
     %------------------------------------------16QAM，QPSK解调--------------------------------------------------
     Rx_serial_complex_symbols=reshape(Rx_complex_carrier_matrix',size(Rx_complex_carrier_matrix, 1)*size(Rx_complex_carrier_matrix,2),1)' ;
-    if (modulation==1)
+    if (using16QAM==1)
         Rx_decoded_binary_symbols=demoduqam16(Rx_serial_complex_symbols);%16QAM
     else
         Rx_decoded_binary_symbols=demoduqpsk(Rx_serial_complex_symbols);%QPSK

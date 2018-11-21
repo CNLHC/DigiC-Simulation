@@ -15,7 +15,7 @@ windowed_Tx_data=OFDMTransiver(baseband_out,carriers,config);
 
 Rx_data=OFDMChannel(windowed_Tx_data,config);
 
-Rx_decoded_binary_symbols=OFDMReceiver(Rx_data,config);
+Rx_decoded_binary_symbols=OFDMReceiver(Rx_data,carriers,config);
 
 baseband_in = Rx_decoded_binary_symbols;
 
