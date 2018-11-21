@@ -6,6 +6,9 @@ config('plotEnable')=plotEnable;
 config('SNR_test')=SNR_test;
 config('CN')=CN;
 config('OP')=OP;
+
+
+
 config('carrierCounts')=1024;
 config('symbolsPerCarrier')=8;
 config('using16QAM')= using16QAM;
