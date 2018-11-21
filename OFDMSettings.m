@@ -19,7 +19,7 @@ else
 end
 config('IFFTBinLength')= 2944;% length of IFFT
 config('prefixRatio')=1/4;%保护间隔与OFDM数据的比例
-config('CPLength')=config('prefixRatio')*config('IFFTBinLength')
+config('CPLength')=config('prefixRatio')*config('IFFTBinLength');
 config('beta')=1/32;%窗函数滚降系数
 config('CSLength')=config('beta')*(config('IFFTBinLength')+config('CPLength'));%循环后缀长度
 end

@@ -9,9 +9,9 @@ function BER=OFDM(using16QAM, SNR, L, plotEnable, SNR_test, CN, OP)
 %----------------------------------------------------
 config = OFDMSettings(using16QAM, SNR, L, plotEnable, SNR_test, CN, OP);
 %----------------------------------------------ÐÅºÅ²úÉú----------------------------------------------
-[baseband_out,conjugate_carriers]=OFDMSimpleSignalGenerator(config);
+[baseband_out,carriers]=OFDMSimpleSignalGenerator(config);
 
-windowed_Tx_data=OFDMTransiver(baseband_out,conjugate_carriers,config);
+windowed_Tx_data=OFDMTransiver(baseband_out,carriers,config);
 
 Rx_data=OFDMChannel(windowed_Tx_data,config);
 
