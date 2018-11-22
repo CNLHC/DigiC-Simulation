@@ -22,7 +22,13 @@ Rx_decoded_binary_symbols=OFDMReceiver(Rx_data,carriers,config);
 baseband_in = Rx_decoded_binary_symbols;
 
 if (plotEnable)
-    figure('Name','Bit Stream','NumberTitle','off');
+    tFigureHandle=findobj(0,'Name','Bit Stream');
+    if(isempty(tFigureHandle))
+        tFigureHandle=  figure('Name','Bit Stream','NumberTitle','off');
+    else
+       figure(tFigureHandle)
+    end
+    movegui(tFigureHandle,'southwest');
     subplot(2,1,1);
     stem(baseband_out(1:100));
     title('输出二进制比特流')

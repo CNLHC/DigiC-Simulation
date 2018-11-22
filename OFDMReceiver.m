@@ -40,7 +40,13 @@ function Rx_decoded_binary_symbols=OFDMReceiver(Rx_data,carriers,config)
     Rx_phase =angle(Rx);%接收信号的相位
     Rx_mag = abs(Rx);%接收信号的幅度
     if (plotEnable)
-        figure('Name','RX Constellation Diagram I','NumberTitle','off');
+        tFigureHandle=findobj(0,'Name','RX Constellation Diagram I');
+        if(isempty(tFigureHandle))
+            tFigureHandle=figure('Name','RX Constellation Diagram I','NumberTitle','off');
+        else
+           figure(tFigureHandle)
+        end
+        movegui(tFigureHandle,'northeast');
         polarplot(Rx_phase, Rx_mag,'bd');%极坐标下接收信号的星座图
         title('RX信号的星座图（极坐标）')
         rlim([0, 10])
@@ -50,7 +56,14 @@ function Rx_decoded_binary_symbols=OFDMReceiver(Rx_data,carriers,config)
     Rx_complex_carrier_matrix = complex(M, N);
 
     if (plotEnable)
-        figure('Name','RX Constellation Diagram II','NumberTitle','off');
+        tFigureHandle=findobj(0,'Name','RX Constellation Diagram II');
+        if(isempty(tFigureHandle))
+            tFigureHandle= figure('Name','RX Constellation Diagram II','NumberTitle','off');
+        else
+           figure(tFigureHandle)
+        end
+        movegui(tFigureHandle,'southeast');
+       
         plot(Rx_complex_carrier_matrix,'*b');%直角坐标下接收信号的星座图
         title('RX信号星座图（直角坐标）')
         axis square

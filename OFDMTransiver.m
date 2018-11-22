@@ -7,9 +7,15 @@ conjugate_carriers = config('IFFTBinLength') - carriers + 2;%¹²éî¶Ô³Æ×ÓÔØ²¨Ó³Éä£
 if (config('using16QAM')==1)
 %----------------------------------------------16QAMµ÷ÖÆ-------------------------------------------
     complex_carrier_matrix=qam16(baseband_out);%µ÷ÖÆºóÊý¾Ý
-    complex_carrier_matrix=reshape(complex_carrier_matrix',config('carrierCounts'),config('symbolsPerCarrier'))';%symbols_per_carrier*carrier_count ¾ØÕó
+    complex_carrier_matrix=reshape(complex_carrier_matrix',config('carrierCounts'),config('symbolsPerCarrier'))';%symbols_per_carrier*carrier_count ????
     if (config('plotEnable'))
-        figure('Name','16QAM Constellation Diagram','NumberTitle','off');
+        tFigureHandle=findobj(0,'Name','QPSK Constellation Diagra');
+        if(isempty(tFigureHandle))
+            tFigureHandle=figure('Name','16QAM Constellation Diagram','NumberTitle','off');
+        else
+           figure(tFigureHandle)
+        end
+        movegui(tFigureHandle,'northwest');
         plot(complex_carrier_matrix,'or');%16QAMµ÷ÖÆºóÐÇ×ùÍ¼
         title('16QAMµ÷ÖÆÐÅºÅÐÇ×ùÍ¼')
         axis square
@@ -21,7 +27,13 @@ else
     complex_carrier_matrix=qpsk(baseband_out);
     complex_carrier_matrix=reshape(complex_carrier_matrix',config('carrierCounts'),config('symbolsPerCarrier'))';
     if (config('plotEnable'))
-        figure('Name','QPSK Constellation Diagram','NumberTitle','off');
+        tFigureHandle=findobj(0,'Name','QPSK Constellation Diagram');
+        if(isempty(tFigureHandle))
+           tFigureHandle=figure('Name','QPSK Constellation Diagram','NumberTitle','off');
+        else
+           figure(tFigureHandle)
+        end
+        movegui(tFigureHandle,'northwest');
         plot(complex_carrier_matrix,'or');%QPSKµ÷ÖÆºóÐÇ×ùÍ¼
         title('QPSKµ÷ÖÆÐÅºÅÐÇ×ùÍ¼')
         axis square
