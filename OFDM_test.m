@@ -71,6 +71,10 @@ function varargout = OFDM_test_OutputFcn(hObject, eventdata, handles)
 
 % Get default command line output from handles structure
 varargout{1} = handles.output;
+set(handles.Path,'String',1);
+set(handles.SNR,'String',20);
+
+
 
 
 % --- Executes on button press in start.
@@ -87,13 +91,15 @@ case '16QAM'
 end
 SNR = str2double(get(handles.SNR,'String'));  
 
-if (isempty(SNR))
-     SNR = 20; 
+if (isnan(SNR))
+     SNR = 20;
+     set(handles.SNR,'String',20);
 end
 pathes = str2double(get(handles.Path,'String'));  
 
-if (isempty(pathes))
+if (isnan(pathes))
      pathes = 1;
+     set(handles.Path,'String',1);
 end
 OP = get(handles.OP_switch, 'Value');
 
