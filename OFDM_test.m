@@ -22,7 +22,7 @@ function varargout = OFDM_test(varargin)
 
 % Edit the above text to modify the response to help OFDM_test
 
-% Last Modified by GUIDE v2.5 07-Nov-2018 22:34:20
+% Last Modified by GUIDE v2.5 22-Nov-2018 23:50:12
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -228,3 +228,18 @@ function Compare_switch_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of Compare_switch
+
+
+% --- Executes when user attempts to close figure1.
+function figure1_CloseRequestFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: delete(hObject) closes the figure
+close(findobj(0,'Name','16QAM Constellation Diagram'));
+close(findobj(0,'Name','QPSK Constellation Diagram'));
+close(findobj(0,'Name','RX Constellation Diagram II'));
+close(findobj(0,'Name','RX Constellation Diagram I'));
+close(findobj(0,'Name','Bit Stream'));
+delete(hObject);
