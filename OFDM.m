@@ -7,6 +7,7 @@ function BER=OFDM(using16QAM, SNR, L, plotEnable, SNR_test, CN, OP)
 %输出：
 %ber：误码率
 %----------------------------------------------------
+fprintf("OFDM-Session:\n\tSNR=%d\n\tPath:%d",SNR,L);
 config = OFDMSettings(using16QAM, SNR, L, plotEnable, SNR_test, CN, OP);
 %----------------------------------------------信号产生----------------------------------------------
 [baseband_out,carriers]=OFDMSimpleSignalGenerator(config);
