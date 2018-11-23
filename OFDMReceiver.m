@@ -1,28 +1,25 @@
-function Rx_decoded_binary_symbols=OFDMReceiver(Rx_data,carriers,config)
-    IFFT_bin_length=config('IFFTBinLength');
-    symbols_per_carrier=config('symbolsPerCarrier');
+function Rx_demodulated_symbols=OFDMReceiver(Rx_data,carriers,config)
+    IFFTLength=config('IFFTLength');
+    SymbolsPerCarrier=config('SymbolsPerCarrier');
     CP=config('CPLength');
     CS=config('CSLength');
     OP=config('OP');
     plotEnable=config('plotEnable');
     using16QAM=config('using16QAM');
-    trainingSymbols_len=config('trainingSymbolsLength');
+    trainingSymbols_len=config('TrainingSymbolsLength');
     trainingSymbols=config('trainingSymbols');
 
-    %------------------------------------------------------------------------------------------------------
-    %                                                                  接收端
-    %------------------------------------------------------------------------------------------------------
-    %----------------------------------串/并变换 去除前缀与后缀 OFDM解调---------------------------
-    Rx_data_matrix=zeros(symbols_per_carrier+trainingSymbols_len+1,IFFT_bin_length+CP+CS);
-    for i=1:symbols_per_carrier+trainingSymbols_len+1
-        Rx_data_matrix(i,:)=Rx_data(1,(i-1)*(IFFT_bin_length+CP)+1:i*(IFFT_bin_length+CP)+CS);%串并变换
+    %-------------------------------串/并变换 去除前缀与后缀 OFDM解调---------------------------
+    Rx_data_matrix=zeros(SymbolsPerCarrier+trainingSymbols_len+1,IFFTLength+CP+CS);
+    for i=1:SymbolsPerCarrier+trainingSymbols_len+1
+        Rx_data_matrix(i,:)=Rx_data(1,(i-1)*(IFFTLength+CP)+1:i*(IFFTLength+CP)+CS);%串并变换
     end
-    Rx_data_complex_matrix=Rx_data_matrix(:,CP+1:IFFT_bin_length+CP);%去除循环前缀与循环后缀，得到有用信号矩阵
-    Y1=fft(Rx_data_complex_matrix,IFFT_bin_length,2);%FFT变换，OFDM解码
+    Rx_symbols=Rx_data_matrix(:,CP+1:IFFTLength+CP);%去除循环前缀与循环后缀，得到信号矩阵
+    FFT_output=fft(Rx_symbols,IFFTLength,2);%FFT变换，OFDM解码
     %------------------------------------------频域均衡--------------------------------------------------
-    Rx_carriers=Y1(:,carriers);%去除保护间隔与共轭数据
+    Rx_carriers=FFT_output(:,carriers);%去除保护间隔与共轭数据
     RxTrainSymbols = Rx_carriers((1: trainingSymbols_len),: );%提取导频
-    H = RxTrainSymbols./ trainingSymbols;%信道估计
+    H = RxTrainSymbols./ trainingSymbols;%信道传递函数估计
     if (isnan(OP)) 
         OP=1;
     end
@@ -53,7 +50,7 @@ function Rx_decoded_binary_symbols=OFDMReceiver(Rx_data,carriers,config)
     end
 
     [M, N]=pol2cart(Rx_phase, Rx_mag); 
-    Rx_complex_carrier_matrix = complex(M, N);
+    Rx_complex_carriers = complex(M, N);
 
     if (plotEnable)
         tFigureHandle=findobj(0,'Name','RX Constellation Diagram II');
@@ -64,21 +61,18 @@ function Rx_decoded_binary_symbols=OFDMReceiver(Rx_data,carriers,config)
         end
         movegui(tFigureHandle,'southeast');
        
-        plot(Rx_complex_carrier_matrix,'*b');%直角坐标下接收信号的星座图
+        plot(Rx_complex_carriers,'*b');%直角坐标下接收信号的星座图
         title('RX信号星座图（直角坐标）')
         axis square
         axis([-4, 4, -4, 4]);
         grid on
     end
     %------------------------------------------16QAM，QPSK解调--------------------------------------------------
-    Rx_serial_complex_symbols=reshape(Rx_complex_carrier_matrix',size(Rx_complex_carrier_matrix, 1)*size(Rx_complex_carrier_matrix,2),1)' ;
+    Rx_symbols=reshape(Rx_complex_carriers',size(Rx_complex_carriers, 1)*size(Rx_complex_carriers,2),1)' ;
     if (using16QAM==1)
-        Rx_decoded_binary_symbols=demoduqam16(Rx_serial_complex_symbols);%16QAM
+        Rx_demodulated_symbols=QAM16_Demodulation(Rx_symbols);%16QAM
     else
-        Rx_decoded_binary_symbols=demoduqpsk(Rx_serial_complex_symbols);%QPSK
+        Rx_demodulated_symbols=QPSK_Demodulation(Rx_symbols);%QPSK
     end
 end
 
-
-
-%-------------------------------------------比特流可视化-------------------------------------------------
