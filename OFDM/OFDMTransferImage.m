@@ -7,7 +7,30 @@ for i=0:99
         tChunk(:,:,:,100*i+1+j)=tImage((i)*6+1:(i+1)*6,(j)*6+1:(j+1)*6,:);
     end
 end
-chunkList=zeros(10000,1024)
+symbolList=zeros(100,86400,'uint8');
+for i=0:99
+    bitstream=zeros(0,86400,'uint8');
+    for j=0:99
+        tC=de2bi(tChunk(:,:,:,100*i+1+j),8);
+        tC=reshape(tC,1,864);
+        bitstream(1,864*j+1:864*(j+1))= tC;
+    end
+    symbolList(i+1,:)=bitstream;
+end
+
+for i=0:99
+    tBitStream=symbolList(i+1,:);
+    for j=0:99
+        tC=tBitStream(1,864*j+1:864*(j+1));
+        
+    
+    
+
+
+
+        
+    
+  
 
 
 % tReImg=zeros(600,600,3,'uint8');
