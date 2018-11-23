@@ -6,9 +6,11 @@ temp=0;
 if (~comp)
     for rounds=1:8
         for ii=1:50
-            Ber_L(ii)=Ber_L(ii)+OFDM(modu_type, SNR, ii*20, 0, 0, 0, 1);
+            config=OFDMSettings(modu_type, SNR, ii*20, 0, 0, 0, 1,1024,8);
+            Ber_L(ii)=Ber_L(ii)+OFDM(config);
         end
-        temp=temp+OFDM(modu_type, SNR, 1, 0, 0, 0, 1);
+        config=OFDMSettings(modu_type, SNR, 1, 0, 0, 0, 1,1024,8);
+        temp=temp+OFDM(config);
     end
     Ber_L=Ber_L./8;
     temp=temp/8;
@@ -29,9 +31,11 @@ if (~comp)
 else
     for rounds=1:5
         for ii=1:50
-            Ber_L(ii)=Ber_L(ii)+OFDM(1, SNR, ii*20, 0, 0, 0, 1);
+            config=OFDMSettings(1, SNR, ii*20, 0, 0, 0, 1,1024,8);
+            Ber_L(ii)=Ber_L(ii)+OFDM(config);
         end
-        temp=temp+OFDM(1, SNR, 1, 0, 0, 0, 1);
+        config=OFDMSettings(1, SNR, 1, 0, 0, 0, 1,1024,8);
+        temp=temp+OFDM(config);
     end
     Ber_L=Ber_L./5;
     temp=temp/5;
@@ -49,9 +53,11 @@ else
     Ber_L=zeros(1,50);
     for rounds=1:5
         for ii=1:50
-            Ber_L(ii)=Ber_L(ii)+OFDM(0, SNR, ii*20, 0, 0, 0, 1);
+            config=OFDMSettings(0, SNR, ii*20, 0, 0, 0, 1,1024,8);
+            Ber_L(ii)=Ber_L(ii)+OFDM(config);
         end
-        temp=temp+OFDM(0, SNR, 1, 0, 0, 0, 1);
+        config=OFDMSettings(0, SNR, 1, 0, 0, 0, 1,1024,8);
+        temp=temp+OFDM(config);
     end
     Ber_L=Ber_L./5;
     temp=temp/5;

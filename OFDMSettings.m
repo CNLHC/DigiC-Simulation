@@ -1,4 +1,4 @@
-function config=OFDMSettings(using16QAM, SNR, L, plotEnable, SNR_test, CN, OP)
+function config=OFDMSettings(using16QAM, SNR, L, plotEnable, SNR_test, CN, OP,carrierCount,symbolsPerCarrier)
 config=containers.Map;
 config('SNR')=SNR;
 config('L')=L;
@@ -7,8 +7,8 @@ config('SNR_test')=SNR_test;
 config('CN')=CN;
 config('OP')=OP;
 
-config('carrierCounts')=1024;
-config('symbolsPerCarrier')=8;
+config('carrierCounts')=carrierCount;
+config('symbolsPerCarrier')=symbolsPerCarrier;
 config('using16QAM')= using16QAM;
 if (config('using16QAM')==1)
     config('bitsPerSymbol')=4;%每符号含比特数,16QAM调制

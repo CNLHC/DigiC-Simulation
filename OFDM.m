@@ -1,14 +1,6 @@
-function BER=OFDM(using16QAM, SNR, L, plotEnable, SNR_test, CN, OP)
-%输入参数：
-%modulation:调制方式，1=16QAM，0=QPSK
-%SNR：信噪比/dB
-%L：信道多径数
-%plot_config：绘图参数，1=绘制星座图
-%输出：
-%ber：误码率
+function BER=OFDM(config)
 %----------------------------------------------------
-fprintf("OFDM-Session:\n\tSNR=%d\n\tPath:%d",SNR,L);
-config = OFDMSettings(using16QAM, SNR, L, plotEnable, SNR_test, CN, OP);
+fprintf("OFDM-Session:\n\tSNR=%d\n\tPath:%d",config('SNR'),config('L'));
 %----------------------------------------------信号产生----------------------------------------------
 [baseband_out,carriers]=OFDMSimpleSignalGenerator(config);
 
@@ -21,7 +13,7 @@ Rx_decoded_binary_symbols=OFDMReceiver(Rx_data,carriers,config);
 
 baseband_in = Rx_decoded_binary_symbols;
 
-if (plotEnable)
+if (config('plotEnable'))
     tFigureHandle=findobj(0,'Name','Bit Stream');
     if(isempty(tFigureHandle))
         tFigureHandle=  figure('Name','Bit Stream','NumberTitle','off');

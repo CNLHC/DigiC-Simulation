@@ -102,8 +102,8 @@ if (isnan(pathes))
      set(handles.Path,'String',1);
 end
 OP = get(handles.OP_switch, 'Value');
-
-OFDM(modu_type, SNR, pathes, 1, 0, 0, OP);
+config=OFDMSettings(modu_type, SNR, pathes, 1, 0, 0, OP,1024,8);
+OFDM(config);
 
 
 
