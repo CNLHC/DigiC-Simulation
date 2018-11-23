@@ -1,9 +1,9 @@
-function BER=OFDM(config)
+function BER=OFDM(config,baseband_out)
 %----------------------------------------------------
 fprintf("OFDM-Session:\n\tSNR=%d\n\tPath:%d",config('SNR'),config('L'));
 %----------------------------------------------信号产生----------------------------------------------
-[baseband_out,carriers]=OFDMSimpleSignalGenerator(config);
-
+% baseband_out=OFDMSimpleSignalGenerator(config);
+carriers = (1:config('carrierCounts'))+(floor(config('IFFTBinLength')/4) -floor(config('carrierCounts')/2));%共轭对称子载波映射，原复数数据对应坐标
 fprintf("%s:Transiver:Calculating\n",datestr(now,'HH:MM:SS.FFF'));
 windowed_Tx_data=OFDMTransiver(baseband_out,carriers,config);
 fprintf("%s:Channel:Calculating\n",datestr(now,'HH:MM:SS.FFF'));
