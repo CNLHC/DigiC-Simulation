@@ -1,17 +1,10 @@
-function BER=OFDM(config,baseband_out)
-%----------------------------------------------------
-fprintf("OFDM-Session:\n\tSNR=%d\n\tPath:%d",config('SNR'),config('L'));
-%----------------------------------------------信号产生----------------------------------------------
-% baseband_out=OFDMSimpleSignalGenerator(config);
-carriers = (1:config('carrierCounts'))+(floor(config('IFFTBinLength')/4) -floor(config('carrierCounts')/2));%共轭对称子载波映射，原复数数据对应坐标
-fprintf("%s:Transiver:Calculating\n",datestr(now,'HH:MM:SS.FFF'));
-windowed_Tx_data=OFDMTransiver(baseband_out,carriers,config);
-fprintf("%s:Channel:Calculating\n",datestr(now,'HH:MM:SS.FFF'));
-Rx_data=OFDMChannel(windowed_Tx_data,config);
-fprintf("%s:Receiver:Calculating\n",datestr(now,'HH:MM:SS.FFF'));
-Rx_decoded_binary_symbols=OFDMReceiver(Rx_data,carriers,config);
+function BER=OFDM(config,Baseband)
 
-baseband_in = Rx_decoded_binary_symbols;
+fprintf("OFDM-Session:\n\tSNR=%g\n\tPath:%d\n",config('SNR'),config('L'));
+carriers = (1:config('Carriers'))+(floor(config('IFFTLength')/4) -floor(config('Carriers')/2));%原复数数据对应坐标
+Tx_data=OFDMTransiver(Baseband,carriers,config);%发射数据
+Rx_data=OFDMChannel(Tx_data,config);%接收数据
+Rx_decoded_signal=OFDMReceiver(Rx_data,carriers,config);%解码
 
 if (config('plotEnable'))
     tFigureHandle=findobj(0,'Name','Bit Stream');
@@ -22,14 +15,15 @@ if (config('plotEnable'))
     end
     movegui(tFigureHandle,'southwest');
     subplot(2,1,1);
-    stem(baseband_out(1:100));
+    stem(Baseband(1:100));
     title('输出二进制比特流')
     subplot(2,1,2);
-    stem(baseband_in(1:100));
+    stem(Rx_decoded_signal(1:100));
     title('解调二进制比特流')
 end
 
-%-------------------------------------------误码率计算-------------------------------------------------
-bit_errors=find(baseband_in ~= baseband_out);
-Bit_Errors = size(bit_errors, 2);
-BER=Bit_Errors/config('basebandOutLengthlength') ;
+%-------------------------------------------BER计算-------------------------------------------------
+Errors=find(Rx_decoded_signal ~= Baseband);
+Bit_Errors = size(Errors, 2);
+BER=Bit_Errors/config('BasebandLength') ;
+fprintf('\tBER=%g\n',BER);

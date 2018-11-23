@@ -103,8 +103,8 @@ if (isnan(pathes))
 end
 OP = get(handles.OP_switch, 'Value');
 config=OFDMSettings(modu_type, SNR, pathes, 1, 0, 0, OP,1024,8);
-baseband_out=OFDMSimpleSignalGenerator(config);
-OFDM(config,baseband_out);
+Baseband=OFDMSimpleSignalGenerator(config);
+OFDM(config,Baseband);
 
 
 

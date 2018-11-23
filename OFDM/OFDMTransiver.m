@@ -1,13 +1,10 @@
-function windowed_Tx_data=OFDMTransiver(baseband_out,carriers,config)
-%------------------------------------------------------------------------------------------------------
-%                                                                  发射端
-%------------------------------------------------------------------------------------------------------
-conjugate_carriers = config('IFFTBinLength') - carriers + 2;%共轭对称子载波映射，共轭复数对应的IFFT点坐标
+function Tx_data=OFDMTransiver(Baseband,carriers,config)
+conjugate_carriers = config('IFFTLength') - carriers + 2;%共轭对称映射
 
 if (config('using16QAM')==1)
 %----------------------------------------------16QAM调制-------------------------------------------
-    complex_carrier_matrix=qam16(baseband_out);%调制后数据
-    complex_carrier_matrix=reshape(complex_carrier_matrix',config('carrierCounts'),config('symbolsPerCarrier'))';%symbols_per_carrier*carrier_count ????
+    carrier_symbols=QAM16(Baseband);%调制后数据
+    carrier_symbols=reshape(carrier_symbols',config('Carriers'),config('SymbolsPerCarrier'))';%SymbolsPerCarrier*carrier_count
     if (config('plotEnable'))
         tFigureHandle=findobj(0,'Name','QPSK Constellation Diagra');
         if(isempty(tFigureHandle))
@@ -16,7 +13,7 @@ if (config('using16QAM')==1)
            figure(tFigureHandle)
         end
         movegui(tFigureHandle,'northwest');
-        plot(complex_carrier_matrix,'or');%16QAM调制后星座图
+        plot(carrier_symbols,'or');%16QAM调制后星座图
         title('16QAM调制信号星座图')
         axis square
         axis([-4, 4, -4, 4]);
@@ -24,8 +21,8 @@ if (config('using16QAM')==1)
     end
 else
 %------------------------------------------------QPSK调制-------------------------------------------
-    complex_carrier_matrix=qpsk(baseband_out);
-    complex_carrier_matrix=reshape(complex_carrier_matrix',config('carrierCounts'),config('symbolsPerCarrier'))';
+    carrier_symbols=QPSK(Baseband);
+    carrier_symbols=reshape(carrier_symbols',config('Carriers'),config('SymbolsPerCarrier'))';
     if (config('plotEnable'))
         tFigureHandle=findobj(0,'Name','QPSK Constellation Diagram');
         if(isempty(tFigureHandle))
@@ -34,7 +31,7 @@ else
            figure(tFigureHandle)
         end
         movegui(tFigureHandle,'northwest');
-        plot(complex_carrier_matrix,'or');%QPSK调制后星座图
+        plot(carrier_symbols,'or');%QPSK调制后星座图
         title('QPSK调制信号星座图')
         axis square
         axis([-2, 2, -2, 2]);
@@ -42,40 +39,40 @@ else
     end
 end
 %---------------------------------------------------导频------------------------------------------------
-trainingSymbols_len=config('trainingSymbolsLength');
+trainingSymbols_len=config('TrainingSymbolsLength');
 trainingSymbols=config('trainingSymbols');
-zero_padding=zeros(1,config('carrierCounts'));%插入一行零数据
-complex_carrier_matrix=cat(1,zero_padding,complex_carrier_matrix);
-complex_carrier_matrix=cat(1,trainingSymbols,complex_carrier_matrix);%块状导频，拼接在数据矩阵前
+zero_padding=zeros(1,config('Carriers'));%插入一行零数据
+carrier_symbols=cat(1,zero_padding,carrier_symbols);
+carrier_symbols=cat(1,trainingSymbols,carrier_symbols);%块状导频，拼接在数据矩阵前
 %----------------------------------------------------IFFT-------------------------------------------------
-IFFT_modulation=zeros(config('symbolsPerCarrier')+trainingSymbols_len+1,config('IFFTBinLength'));%zeropadding
-IFFT_modulation(:,carriers ) = complex_carrier_matrix ;%添加导频信号 ，映射原数据
-IFFT_modulation(:,conjugate_carriers ) = conj(complex_carrier_matrix);%共轭复数映射，共轭拓展使IFFT输出实序列
-signal_after_IFFT=ifft(IFFT_modulation,config('IFFTBinLength'),2);%OFDM调制，获得时域波形矩阵，行为每载波所含符号数+导频长度+1，列为IFFT点数
+IFFT_output=zeros(config('SymbolsPerCarrier')+trainingSymbols_len+1,config('IFFTLength'));%zeropadding
+IFFT_output(:,carriers ) = carrier_symbols ;%添加导频信号 ，映射原数据
+IFFT_output(:,conjugate_carriers ) = conj(carrier_symbols);%共轭复数映射，共轭拓展使IFFT输出实序列
+signal_after_IFFT=ifft(IFFT_output,config('IFFTLength'),2);%OFDM调制，获得时域矩阵，行为每载波所含符号数+导频长度+1，列为IFFT点数
 %-------------------------------------------添加循环前缀与后缀--------------------------------------------
-TEMP=zeros(config('symbolsPerCarrier')+trainingSymbols_len+1,config('IFFTBinLength')+config('CPLength')+config('CSLength'));
-for k=1:config('symbolsPerCarrier')+trainingSymbols_len+1
-    for i=1:config('IFFTBinLength')
+TEMP=zeros(config('SymbolsPerCarrier')+trainingSymbols_len+1,config('IFFTLength')+config('CPLength')+config('CSLength'));
+for k=1:config('SymbolsPerCarrier')+trainingSymbols_len+1
+    for i=1:config('IFFTLength')
         TEMP(k,i+config('CPLength'))=signal_after_IFFT(k,i);%OFDM信号映射
     end
     for i=1:config('CPLength')
-        TEMP(k,i)=signal_after_IFFT(k,i+config('IFFTBinLength')-config('CPLength'));%添加循环前缀
+        TEMP(k,i)=signal_after_IFFT(k,i+config('IFFTLength')-config('CPLength'));%添加循环前缀
     end
     for j=1:config('CSLength')
-        TEMP(k,config('IFFTBinLength')+config('CPLength')+j)=signal_after_IFFT(k,j);%添加循环后缀
+        TEMP(k,config('IFFTLength')+config('CPLength')+j)=signal_after_IFFT(k,j);%添加循环后缀
     end
 end
-time_wave_matrix_cp=TEMP;%添加了循环前缀与后缀的时域信号矩阵
+symbols_with_CP=TEMP;%添加了循环前缀与后缀的时域信号矩阵
 %-------------------------------------------------OFDM符号加窗-----------------------------------------------------
-windowed_time_wave_matrix_cp=zeros(config('symbolsPerCarrier')+trainingSymbols_len+1,config('IFFTBinLength')+config('CPLength')+config('CSLength'));
-for i = 1:config('symbolsPerCarrier')+trainingSymbols_len+1
-windowed_time_wave_matrix_cp(i,:) = real(time_wave_matrix_cp(i,:)).*rcoswindow(config('beta'),config('IFFTBinLength')+config('CPLength'))';%加升余弦窗
+windowed_symbols=zeros(config('SymbolsPerCarrier')+trainingSymbols_len+1,config('IFFTLength')+config('CPLength')+config('CSLength'));
+for i = 1:config('SymbolsPerCarrier')+trainingSymbols_len+1
+windowed_symbols(i,:) = real(symbols_with_CP(i,:)).*Window(config('beta'),config('IFFTLength')+config('CPLength'))';%加窗
 end  
 %--------------------------------------------生成发送信号，并串变换----------------------------------------------------
-windowed_Tx_data=zeros(1,(config('symbolsPerCarrier')+trainingSymbols_len+1)*(config('IFFTBinLength')+config('CPLength'))+config('CSLength'));%++
-windowed_Tx_data(1:config('IFFTBinLength')+config('CPLength')+config('CSLength') )=windowed_time_wave_matrix_cp(1,:);
-for i = 1:config('symbolsPerCarrier')+trainingSymbols_len+1-1 %++
-    windowed_Tx_data((config('IFFTBinLength')+config('CPLength'))*i+1:(config('IFFTBinLength')+config('CPLength'))*(i+1)+config('CSLength'))=windowed_time_wave_matrix_cp(i+1,:);
-    %并串转换，循环后缀与循环前缀相叠加
+Tx_data=zeros(1,(config('SymbolsPerCarrier')+trainingSymbols_len+1)*(config('IFFTLength')+config('CPLength'))+config('CSLength'));
+Tx_data(1:config('IFFTLength')+config('CPLength')+config('CSLength') )=windowed_symbols(1,:);
+for i = 1:config('SymbolsPerCarrier')+trainingSymbols_len+1-1 
+    Tx_data((config('IFFTLength')+config('CPLength'))*i+1:(config('IFFTLength')+config('CPLength'))*(i+1)+config('CSLength'))=windowed_symbols(i+1,:);
+    %并串转换
 end
 end

@@ -7,12 +7,12 @@ if (~comp)
     for rounds=1:8
         for ii=1:50
             config=OFDMSettings(modu_type, SNR, ii*20, 0, 0, 0, 1,1024,8);
-            baseband_out=OFDMSimpleSignalGenerator(config);
-            Ber_L(ii)=Ber_L(ii)+OFDM(config,baseband_out);
+            Baseband=OFDMSimpleSignalGenerator(config);
+            Ber_L(ii)=Ber_L(ii)+OFDM(config,Baseband);
         end
         config=OFDMSettings(modu_type, SNR, 1, 0, 0, 0, 1,1024,8);
-        baseband_out=OFDMSimpleSignalGenerator(config);
-        temp=temp+OFDM(config,baseband_out);
+        Baseband=OFDMSimpleSignalGenerator(config);
+        temp=temp+OFDM(config,Baseband);
     end
     Ber_L=Ber_L./8;
     temp=temp/8;
@@ -22,9 +22,9 @@ if (~comp)
     plot(x,Ber_L,'.r','MarkerSize',12);
 
     if (modu_type==1)
-        title('BER-Number of Pathes  16-QAM  SNR=', num2str(SNR))
+        title(['BER-Number of Pathes  16-QAM  SNR=', num2str(SNR)])
     else
-        title('BER-Number of Pathes  QPSK  SNR=', num2str(SNR))
+        title(['BER-Number of Pathes  QPSK  SNR=', num2str(SNR)])
     end
     xlabel('Pathes')
     ylabel('BER')
@@ -34,12 +34,12 @@ else
     for rounds=1:5
         for ii=1:50
             config=OFDMSettings(1, SNR, ii*20, 0, 0, 0, 1,1024,8);
-            baseband_out=OFDMSimpleSignalGenerator(config);
-            Ber_L(ii)=Ber_L(ii)+OFDM(config,baseband_out);
+            Baseband=OFDMSimpleSignalGenerator(config);
+            Ber_L(ii)=Ber_L(ii)+OFDM(config,Baseband);
         end
         config=OFDMSettings(1, SNR, 1, 0, 0, 0, 1,1024,8);
-        baseband_out=OFDMSimpleSignalGenerator(config);
-        temp=temp+OFDM(config,baseband_out);
+        Baseband=OFDMSimpleSignalGenerator(config);
+        temp=temp+OFDM(config,Baseband);
     end
     Ber_L=Ber_L./5;
     temp=temp/5;
@@ -58,12 +58,12 @@ else
     for rounds=1:5
         for ii=1:50
             config=OFDMSettings(0, SNR, ii*20, 0, 0, 0, 1,1024,8);
-            baseband_out=OFDMSimpleSignalGenerator(config);
-            Ber_L(ii)=Ber_L(ii)+OFDM(config,baseband_out);
+            Baseband=OFDMSimpleSignalGenerator(config);
+            Ber_L(ii)=Ber_L(ii)+OFDM(config,Baseband);
         end
         config=OFDMSettings(0, SNR, 1, 0, 0, 0, 1,1024,8);
-        baseband_out=OFDMSimpleSignalGenerator(config);
-        temp=temp+OFDM(config,baseband_out);
+        Baseband=OFDMSimpleSignalGenerator(config);
+        temp=temp+OFDM(config,Baseband);
     end
     Ber_L=Ber_L./5;
     temp=temp/5;

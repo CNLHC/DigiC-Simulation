@@ -9,14 +9,14 @@ end
     CN(i)=(randn(1)+1i*randn(1));
     end
 if(~comp)
-    for rounds=1:3
+    for rounds=1:2
         for ii=1:61
             config=OFDMSettings(modu_type, (ii-11)/2, L, 0, 1, CN, 1,1024,8);
-            baseband_out=OFDMSimpleSignalGenerator(config);
-            Ber_SNR(ii)=OFDM(config,baseband_out);
+            Baseband=OFDMSimpleSignalGenerator(config);
+            Ber_SNR(ii)=OFDM(config,Baseband);
         end
     end
-    Ber_SNR=Ber_SNR./3;
+    Ber_SNR=Ber_SNR./2;
 
     figure('Name','BER-SNR','NumberTitle','off');
     plot(x, Ber_SNR,'.b','MarkerSize',10,'MarkerEdgeColor','m');
@@ -33,8 +33,8 @@ else
     for rounds=1:2
         for ii=1:61
             config=OFDMSettings(1, (ii-11)/2, L, 0, 1, CN, 1,1024,8);
-            baseband_out=OFDMSimpleSignalGenerator(config);
-            Ber_SNR(ii)=OFDM(config,baseband_out);
+            Baseband=OFDMSimpleSignalGenerator(config);
+            Ber_SNR(ii)=OFDM(config,Baseband);
         end
     end
     Ber_SNR=Ber_SNR./2;
@@ -51,8 +51,8 @@ else
     for rounds=1:2
         for ii=1:61
             config=OFDMSettings(0, (ii-11)/2, L, 0, 1, CN, 1,1024,8);
-            baseband_out=OFDMSimpleSignalGenerator(config);
-            Ber_SNR(ii)=OFDM(config,baseband_out);
+            Baseband=OFDMSimpleSignalGenerator(config);
+            Ber_SNR(ii)=OFDM(config,Baseband);
         end
     end
     Ber_SNR=Ber_SNR./2;
